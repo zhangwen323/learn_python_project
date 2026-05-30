@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title if post else "Not Found" }}{% endblock %}
+
+{% block content %}
+{% if not post %}
+    <p style="text-align:center; margin:4rem 0;">Post not found. <a href="/">Back to home</a>.</p>
+{% else %}
+    <article class="post-full">
+        <h1>{{ post.title }}</h1>
+        <div class="meta">
+            {{ post.author.username if post.author else "Unknown" }}
+            &middot; {{ post.created_at[:10] }}
+        </div>
+
+        <div class="content">{{ post.content }}</div>
+
+        {% if is_author %}
+        <div class="actions">
+            <a href="/post/{{ post.slug }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+            <form method="post" action="/post/{{ post.slug }}/delete/" style="display:inline; padding:0; box-shadow:none; background:none;">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this post?')">Delete</button>
+            </form>
+        </div>
+        {% endif %}
+    </article>
+
+    <section class="comments">
+        <h3>Comments ({{ comments|length }})</h3>
+
+        {% for c in comments %}
+        <div class="comment">
+            <div class="meta">{{ c.author.username if c.author else "Unknown" }} &middot; {{ c.created_at[:10] }}</div>
+            <p>{{ c.content }}</p>
+        </div>
+        {% else %}
+        <p style="color:#95a5a6;">No comments yet.</p>
+        {% endfor %}
+
+        {% if username %}
+        <form method="post" action="/post/{{ post.slug }}/comment/" class="comment-form">
+            <label for="content">Leave a comment</label>
+            <textarea name="content" id="content" required placeholder="Write something..."></textarea>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+        </form>
+        {% else %}
+        <p style="margin-top:1.5rem;"><a href="/accounts/login/">Login</a> to leave a comment.</p>
+        {% endif %}
+    </section>
+{% endif %}
+{% endblock %}

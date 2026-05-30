@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{% if post %}Edit Post{% else %}New Post{% endif %}{% endblock %}
+
+{% block content %}
+<form method="post" style="max-width:700px; margin:2rem auto;">
+    <h2 style="margin-bottom:1.5rem;">{% if post %}Edit Post{% else %}New Post{% endif %}</h2>
+
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title" value="{{ post.title if post else '' }}" required>
+
+    <label for="content">Content</label>
+    <textarea name="content" id="content" required>{{ post.content if post else '' }}</textarea>
+
+    <label>
+        <input type="checkbox" name="published" value="true" {% if post and post.published %}checked{% endif %}>
+        Publish immediately
+    </label>
+
+    <div style="margin-top:1.5rem; display:flex; gap:1rem;">
+        <button type="submit" class="btn btn-primary">
+            {% if post %}Save Changes{% else %}Create Post{% endif %}
+        </button>
+        <a href="{% if post %}/post/{{ post.slug }}/{% else %}/{% endif %}" class="btn" style="background:#eee; color:#333;">Cancel</a>
+    </div>
+</form>
+{% endblock %}
