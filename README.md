@@ -8,8 +8,8 @@ Project-driven Python learning — from CLI tools to full-stack web apps.
 |---|---------|-----------|--------|
 | 1 | File Organizer | [file_organizer/](file_organizer/) | pathlib, argparse, rich, pytest, pyproject.toml packaging |
 | 2 | Web Scraper + Viz | [web_scraper/](web_scraper/) | httpx, BeautifulSoup, SQLAlchemy, pandas, matplotlib, seaborn |
-| 3 | RESTful API Service | [api_service/](blog_api/) | FastAPI, Pydantic, JWT, async/await, Alembic |
-| 4 | Full-Stack Web App | `web_app/` | Django / Streamlit, end-to-end practice |
+| 3 | Blog API | [blog_api/](blog_api/) | FastAPI, SQLAlchemy async, JWT, Alembic, Jinja2 templates |
+| 4 | Full-Stack Blog | [blog_api/](blog_api/) | Jinja2 SSR, cookie auth, HTML forms, CSS |
 
 ## Environment
 

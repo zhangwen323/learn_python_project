@@ -134,6 +134,63 @@ static/css/         →  CSS stylesheet
 main.py             →  App creation, CORS, static files, router registration
 ```
 
+## Learning Roadmap
+
+Follow a single request through the stack to understand how everything connects.
+
+### Round 1: How a page is rendered
+
+```
+Browser → GET / → main.py → pages.router → post_list()
+  → select(Post).options(joinedload(Post.author))  # eager load relationships
+  → _post_to_dict(post)                             # ORM → plain dict
+  → _render("post_list.html", ...)                  # Jinja2 renders HTML
+  → base.html (layout) + post_list.html (content)
+  → Browser receives full HTML page
+```
+
+Key files: `main.py` → `pages.py` → `templates/post_list.html` → `templates/base.html`
+
+### Round 2: How auth state flows
+
+```
+1. GET /accounts/login/       → login.html form
+2. POST /accounts/login/      → login_submit()
+     → verify_password()      # bcrypt check
+     → create_access_token()  # JWT with sub=<user_id>
+     → resp.set_cookie("token", ...)  # httponly cookie
+
+3. Every subsequent request    → _resolve_user()
+     → reads cookie            → decode_access_token()
+     → select(User).where(id=payload["sub"])
+     → returns (user_obj, username)
+```
+
+Key files: `services/auth.py` → `routers/pages.py` → `dependencies.py`
+
+### Round 3: API vs HTML — same data, two exits
+
+| | pages.py (HTML) | posts.py (API) |
+|--|-----------------|-----------------|
+| Route | `GET /` | `GET /api/posts` |
+| Query | `select(Post).options(joinedload(...))` | Same pattern |
+| Pagination | `page` → template context | `page`/`size` → Pydantic model |
+| Output | `_render("post_list.html", ctx)` | `PostListResponse` → JSON |
+
+Compare `routers/pages.py` vs `routers/posts.py` side by side — same database queries, different consumers.
+
+### Key Concepts by File
+
+| Concept | Where to look |
+|---------|---------------|
+| Async SQLAlchemy | `database.py`, all `select()` + `await db.execute()` calls |
+| Relationship eager loading | `joinedload(Post.author)` in pages.py queries |
+| JWT creation & verification | `services/auth.py` |
+| Cookie-based auth | `set_cookie("token", ...)` in login/register handlers |
+| Template inheritance | `base.html` (`{% block content %}`) |
+| Form handling | `Form(...)` params in pages.py POST routes |
+| Dependency injection | `Depends(get_db)` in route signatures |
+
 ## Running Tests
 
 ```bash
