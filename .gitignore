@@ -224,3 +224,5 @@ AGENTS.md
 CLAUDE.md
 
 *.db
+lianjia_auth.json
+rental_scraper/
